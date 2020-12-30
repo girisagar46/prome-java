@@ -17,7 +17,10 @@ public class Actuator {
 
   public Actuator(
       PrometheusMeterRegistry prometheusMeterRegistry) {
+    // inject PrometheusMeterRegistry to Actuator class because we're using Prometheus
     this.prometheusMeterRegistry = prometheusMeterRegistry;
+
+    // These classes are for exposing JVM specific metrics
     new ClassLoaderMetrics().bindTo(this.prometheusMeterRegistry);
     new JvmMemoryMetrics().bindTo(this.prometheusMeterRegistry);
     new JvmGcMetrics().bindTo(this.prometheusMeterRegistry);
@@ -26,6 +29,7 @@ public class Actuator {
   }
 
   public void start() throws IOException {
+    // create HTTP server endpoint which will expose endpoint to /metrics
     server = HttpServer.create(new InetSocketAddress(8080), 0);
     server.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(2));
 
